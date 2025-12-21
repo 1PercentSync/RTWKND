@@ -17,6 +17,7 @@ int main() {
 
     out << "P3\n" << image_width << ' ' << image_height << "\n255\n";
     for (int j = 0; j < image_height; j++) {
+        std::clog << "Scanline remaining: " << (image_height - j) << '\n' << std::flush;
         for (int i = 0; i < image_width; i++) {
             const double r = static_cast<double>(i) / (image_width - 1);
             const double g = static_cast<double>(j) / (image_height - 1);
@@ -29,4 +30,6 @@ int main() {
             out << ir << ' ' << ig << ' ' << ib << '\n';
         }
     }
+
+    std::clog << "Done.\n";
 }
