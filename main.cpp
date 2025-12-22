@@ -6,10 +6,18 @@
 
 int main() {
     // Image
-    constexpr int image_width = 256;
-    constexpr int image_height = 256;
+    constexpr auto aspect_ratio = 16.0 / 9.0;
+    constexpr int image_width = 400;
 
-    // Write to project root
+    // Calculate the image height and ensure that it's at least 1.
+    int image_height = static_cast<int>(image_width / aspect_ratio);
+    image_height = (image_height < 1) ? 1 : image_height;
+
+    // Viewport widths less than one are ok since they are really valued.
+    constexpr auto viewport_height = 2.0;
+    auto viewport_width = viewport_height * (double(image_width) / image_height);
+
+    // Write to the project root
     const std::filesystem::path out_path = std::filesystem::current_path().parent_path() / "output.ppm";
     std::ofstream out(out_path);
     if (!out) {
