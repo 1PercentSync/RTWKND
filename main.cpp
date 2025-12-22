@@ -5,18 +5,24 @@
 #include "ray.h"
 #include "vec3.h"
 
-bool hit_sphere(const point3 &center, const double radius, const ray &r) {
+double hit_sphere(const point3 &center, const double radius, const ray &r) {
     const vec3 oc = center - r.origin();
     const auto a = dot(r.direction(), r.direction());
     const auto b = -2.0 * dot(r.direction(), oc);
     const auto c = dot(oc, oc) - radius * radius;
-    const auto discriminant = b * b - 4 * a * c;
-    return (discriminant >= 0);
+
+    if (const auto discriminant = b * b - 4 * a * c; discriminant < 0) {
+        return -1.0;
+    } else {
+        return (-b - std::sqrt(discriminant)) / (2.0 * a);
+    }
 }
 
 color ray_color(const ray &r) {
-    if (hit_sphere(point3(0, 0, -1), 0.5, r))
-        return {1, 0, 0};
+    if (const auto t = hit_sphere(point3(0, 0, -1), 0.5, r); t > 0.0) {
+        const vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
+        return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
+    }
 
     const vec3 unit_direction = unit_vector(r.direction());
     const auto a = 0.5 * (unit_direction.y() + 1.0);
