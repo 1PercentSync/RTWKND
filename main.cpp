@@ -31,6 +31,7 @@ int main() {
     // Calculate the image height and ensure that it's at least 1.
     int image_height = static_cast<int>(image_width / aspect_ratio);
     // ReSharper disable once CppDFAConstantConditions
+    // ReSharper disable once CppDFAUnreachableCode
     image_height = (image_height < 1) ? 1 : image_height;
 
     // Camera
