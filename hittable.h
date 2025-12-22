@@ -1,8 +1,6 @@
 #ifndef RTWKND_HITTABLE_H
 #define RTWKND_HITTABLE_H
 
-#include "ray.h"
-
 class hit_record {
 public:
     point3 p;
