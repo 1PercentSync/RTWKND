@@ -1,0 +1,44 @@
+#ifndef RTWKND_SPHERE_H
+#define RTWKND_SPHERE_H
+
+#include "hittable.h"
+#include "vec3.h"
+
+class sphere : public hittable {
+public:
+    sphere(const point3 &center, const double radius) : center(center), radius(std::fmax(0, radius)) {
+    }
+
+    bool hit(const ray &r, const double ray_tmin, const double ray_tmax, hit_record &rec) const override {
+        const vec3 oc = center - r.origin();
+        const auto a = r.direction().length_squared();
+        const auto h = dot(r.direction(), oc);
+        const auto c = oc.length_squared() - radius * radius;
+
+        const auto discriminant = h * h - a * c;
+        if (discriminant < 0) {
+            return false;
+        }
+        const auto sqrtd = std::sqrt(discriminant);
+
+        // Find the nearest root that lies in the acceptable range.
+        auto root = (h - sqrtd) / a;
+        if (root <= ray_tmin || ray_tmax <= root) {
+            root = (h + sqrtd) / a;
+            if (root <= ray_tmin || ray_tmax <= root)
+                return false;
+        }
+
+        rec.t = root;
+        rec.p = r.at(rec.t);
+        rec.normal = (rec.p - center) / radius;
+
+        return true;
+    }
+
+private:
+    point3 center;
+    double radius;
+};
+
+#endif //RTWKND_SPHERE_H
