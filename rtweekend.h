@@ -1,12 +1,10 @@
 #ifndef RTWKND_RTWEEKEND_H
 #define RTWKND_RTWEEKEND_H
 
-#include <cmath>
 #include <iostream>
 #include <limits>
 #include <memory>
 #include <random>
-
 
 // C++ Std Usings
 
@@ -36,9 +34,13 @@ inline double random_double(const double min, const double max) {
 
 // Common Headers
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include "color.h"
+// ReSharper disable once CppUnusedIncludeDirective
 #include "interval.h"
+// ReSharper disable once CppUnusedIncludeDirective
 #include "ray.h"
+// ReSharper disable once CppUnusedIncludeDirective
 #include "vec3.h"
 
 #endif //RTWKND_RTWEEKEND_H

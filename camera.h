@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include "hittable.h"
+#include "material.h"
 #include "vec3.h"
 
 class camera {
@@ -101,8 +102,10 @@ private:
             return {0, 0, 0};
 
         if (hit_record rec; world.hit(r, interval(0.001, infinity), rec)) {
-            const vec3 direction = rec.normal + random_unit_vector();
-            return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
+            color attenuation;
+            if (ray scattered; rec.mat->scatter(r, rec, attenuation, scattered))
+                return attenuation * ray_color(scattered, depth - 1, world);
+            return {0, 0, 0};
         }
 
         const vec3 unit_direction = unit_vector(r.direction());
