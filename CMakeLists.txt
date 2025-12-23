@@ -3,6 +3,9 @@ project(RTWKND)
 
 set(CMAKE_CXX_STANDARD 23)
 
+# Enable OpenMP for multi-threading
+find_package(OpenMP REQUIRED)
+
 add_executable(RTWKND main.cpp
         vec3.h
         color.h
@@ -14,3 +17,6 @@ add_executable(RTWKND main.cpp
         interval.h
         camera.h
         material.h)
+
+# Link OpenMP
+target_link_libraries(RTWKND PRIVATE OpenMP::OpenMP_CXX)

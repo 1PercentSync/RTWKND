@@ -3,6 +3,9 @@
 
 #include <filesystem>
 #include <fstream>
+#include <vector>
+#include <atomic>
+#include <omp.h>
 #include "hittable.h"
 #include "material.h"
 #include "vec3.h"
@@ -25,7 +28,40 @@ public:
     void render(const hittable &world) {
         initialize();
 
-        // Write to the project root
+        // Allocate frame buffer
+        std::vector<color> framebuffer(image_width * image_height);
+        std::atomic<int> completed_rows{0};
+        const int total_rows = image_height;
+        const int num_threads = omp_get_max_threads();
+
+        std::clog << "Rendering with " << num_threads << " threads...\n";
+
+        // Parallel rendering to frame buffer
+        #pragma omp parallel for schedule(dynamic, 1)
+        for (int j = 0; j < image_height; j++) {
+            for (int i = 0; i < image_width; i++) {
+                color pixel_color(0, 0, 0);
+                for (int sample = 0; sample < samples_per_pixel; sample++) {
+                    ray r = get_ray(i, j);
+                    pixel_color += ray_color(r, max_depth, world);
+                }
+                framebuffer[j * image_width + i] = pixel_samples_scale * pixel_color;
+            }
+
+            // Progress reporting (thread-safe)
+            const int rows_done = ++completed_rows;
+            if (rows_done % 10 == 0 || rows_done == total_rows) {
+                #pragma omp critical
+                {
+                    std::clog << "\rProgress: " << rows_done << "/" << total_rows
+                              << " (" << (100 * rows_done / total_rows) << "%)" << std::flush;
+                }
+            }
+        }
+
+        std::clog << "\nWriting output...\n";
+
+        // Write to the project root (sequential)
         const std::filesystem::path out_path = std::filesystem::current_path().parent_path() / "output.ppm";
         std::ofstream out(out_path);
         if (!out) {
@@ -33,17 +69,10 @@ public:
             return;
         }
 
-        // Render
         out << "P3\n" << image_width << ' ' << image_height << "\n255\n";
         for (int j = 0; j < image_height; j++) {
-            std::clog << "Scanline remaining: " << (image_height - j) << '\n' << std::flush;
             for (int i = 0; i < image_width; i++) {
-                color pixel_color(0, 0, 0);
-                for (int sample = 0; sample < samples_per_pixel; sample++) {
-                    ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, max_depth, world);
-                }
-                write_color(out, pixel_samples_scale * pixel_color);
+                write_color(out, framebuffer[j * image_width + i]);
             }
         }
 
