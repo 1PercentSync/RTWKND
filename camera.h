@@ -37,7 +37,7 @@ public:
         std::clog << "Rendering with " << num_threads << " threads...\n";
 
         // Parallel rendering to frame buffer
-        #pragma omp parallel for schedule(dynamic, 1)
+#pragma omp parallel for schedule(dynamic, 1)
         for (int j = 0; j < image_height; j++) {
             for (int i = 0; i < image_width; i++) {
                 color pixel_color(0, 0, 0);
@@ -51,10 +51,10 @@ public:
             // Progress reporting (thread-safe)
             const int rows_done = ++completed_rows;
             if (rows_done % 10 == 0 || rows_done == total_rows) {
-                #pragma omp critical
+#pragma omp critical
                 {
                     std::clog << "\rProgress: " << rows_done << "/" << total_rows
-                              << " (" << (100 * rows_done / total_rows) << "%)" << std::flush;
+                            << " (" << (100 * rows_done / total_rows) << "%)" << std::flush;
                 }
             }
         }
@@ -136,10 +136,11 @@ private:
                                   + ((i + offset.x()) * pixel_delta_u)
                                   + ((j + offset.y()) * pixel_delta_v);
 
-        auto ray_origin = (defocus_angle <= 0) ? center : defocus_disk_sample();
-        auto ray_direction = pixel_sample - ray_origin;
+        const auto ray_origin = (defocus_angle <= 0) ? center : defocus_disk_sample();
+        const auto ray_direction = pixel_sample - ray_origin;
+        const auto ray_time = random_double();
 
-        return {ray_origin, ray_direction};
+        return {ray_origin, ray_direction, ray_time};
     }
 
     static vec3 sample_square() {
