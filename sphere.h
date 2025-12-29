@@ -10,13 +10,21 @@ public:
     // Stationary Sphere
     sphere(const point3 &static_center, const double radius, shared_ptr<material> mat)
         : center(static_center, vec3(0, 0, 0)), radius(std::fmax(0, radius)), mat(std::move(mat)) {
+        const auto rvec = vec3(radius, radius, radius);
+        bbox = aabb(static_center - rvec, static_center + rvec);
     }
 
     // Moving Sphere
     sphere(const point3 &center1, const point3 &center2, const double radius,
            shared_ptr<material> mat)
         : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat(std::move(mat)) {
+        const auto rvec = vec3(radius, radius, radius);
+        const aabb box1(center.at(0) - rvec, center.at(0) + rvec);
+        const aabb box2(center.at(1) - rvec, center.at(1) + rvec);
+        bbox = aabb(box1, box2);
     }
+
+    [[nodiscard]] aabb bounding_box() const override { return bbox; }
 
     bool hit(const ray &r, const interval ray_t, hit_record &rec) const override {
         const point3 current_center = center.at(r.time());
@@ -52,6 +60,7 @@ private:
     ray center;
     double radius;
     shared_ptr<material> mat;
+    aabb bbox;
 };
 
 #endif //RTWKND_SPHERE_H

@@ -1,6 +1,8 @@
 #ifndef RTWKND_HITTABLE_H
 #define RTWKND_HITTABLE_H
 
+#include "aabb.h"
+
 class material;
 
 class hit_record {
@@ -25,6 +27,8 @@ public:
     virtual ~hittable() = default;
 
     virtual bool hit(const ray &r, interval ray_t, hit_record &rec) const = 0;
+
+    [[nodiscard]] virtual aabb bounding_box() const = 0;
 };
 
 #endif //RTWKND_HITTABLE_H

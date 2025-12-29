@@ -11,6 +11,12 @@ public:
     interval(const double min, const double max) : min(min), max(max) {
     }
 
+    interval(const interval& a, const interval& b) {
+        // Create the interval tightly enclosing the two input intervals.
+        min = a.min <= b.min ? a.min : b.min;
+        max = a.max >= b.max ? a.max : b.max;
+    }
+
     [[nodiscard]] double size() const {
         return max - min;
     }
@@ -27,6 +33,11 @@ public:
         if (x < min) return min;
         if (x > max) return max;
         return x;
+    }
+
+    [[nodiscard]] interval expand(const double delta) const {
+        const auto padding = delta / 2;
+        return {min - padding, max + padding};
     }
 
     static const interval empty, universe;
