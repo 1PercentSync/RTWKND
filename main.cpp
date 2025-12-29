@@ -7,6 +7,8 @@
 #include "sphere.h"
 #include "bvh.h"
 
+#include <chrono>
+
 int main() {
     // World
     hittable_list world;
@@ -57,8 +59,8 @@ int main() {
     camera cam;
 
     cam.aspect_ratio = 16.0 / 9.0;
-    cam.image_width = 400;
-    cam.samples_per_pixel = 100;
+    cam.image_width = 1920;
+    cam.samples_per_pixel = 500;
     cam.max_depth = 50;
 
     cam.vfov = 20;
@@ -69,5 +71,12 @@ int main() {
     cam.defocus_angle = 0.6;
     cam.focus_dist = 10.0;
 
+    const auto start = std::chrono::high_resolution_clock::now();
+
     cam.render(world);
+
+    const auto end = std::chrono::high_resolution_clock::now();
+
+    const auto duration = std::chrono::duration<double>(end - start);
+    std::clog << "\nRender time: " << duration.count() << " s" << std::endl;
 }
