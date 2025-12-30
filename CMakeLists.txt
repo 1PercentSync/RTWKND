@@ -18,7 +18,8 @@ add_executable(RTWKND main.cpp
         camera.h
         material.h
         aabb.h
-        bvh.h)
+        bvh.h
+        texture.h)
 
 # Link OpenMP
 target_link_libraries(RTWKND PRIVATE OpenMP::OpenMP_CXX)

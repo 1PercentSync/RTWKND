@@ -49,8 +49,7 @@ public:
             }
 
             // Progress reporting (thread-safe)
-            const int rows_done = ++completed_rows;
-            if (rows_done % 10 == 0 || rows_done == total_rows) {
+            if (const int rows_done = ++completed_rows; rows_done % 10 == 0 || rows_done == total_rows) {
 #pragma omp critical
                 {
                     std::clog << "\rProgress: " << rows_done << "/" << total_rows
