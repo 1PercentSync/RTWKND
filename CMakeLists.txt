@@ -19,7 +19,8 @@ add_executable(RTWKND main.cpp
         material.h
         aabb.h
         bvh.h
-        texture.h)
+        texture.h
+        rtw_stb_image.h)
 
 # Link OpenMP
 target_link_libraries(RTWKND PRIVATE OpenMP::OpenMP_CXX)
